@@ -22,4 +22,4 @@ AmbulanceManagementSystem/
 
 ├── README.md          # Project overview and instructions
 
-└── LICENSE            # License information (if you want to add one)
+└── LICENSE            # License information 
