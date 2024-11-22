@@ -4,7 +4,6 @@
 #include "Patient.h"
 #include "Car.h"
 
-
 class Hospital
 {
 private:
@@ -26,6 +25,7 @@ private:
 	LinkedQueue<Car*> SC;
 public:
 	Hospital(int Hospital_ID, int t_NC, int t_SC, int NC_S, int SC_S);
+	void incrementTimeStep();
 	int getHospital_ID();
 	int getNumber_CurrentEP();
 	int getNumber_FreeNC();
