@@ -1,5 +1,6 @@
 #include "Organizer.h"
 #include <string.h>
+#include <fstream>	//for file reading
 
 
 Organizer::Organizer(string fileName) {
