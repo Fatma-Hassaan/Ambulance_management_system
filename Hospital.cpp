@@ -13,6 +13,11 @@ Hospital::Hospital(int Hospital_ID, int t_NC, int t_SC, int NC_S, int SC_S) : H_
 	}
 }
 
+void Hospital::incrementTimeStep()
+{
+	TS++;
+}
+
 int Hospital:: getHospital_ID() {
 	return H_ID;
 }
