@@ -26,6 +26,7 @@ private:
 public:
 	Hospital(int Hospital_ID, int t_NC, int t_SC, int NC_S, int SC_S);
 	int getHospital_ID();
+	int getNumber_CurrentEP();
 	int getNumber_FreeNC();
 	int getNumber_FreeSC();
 	void RecievePatient(Patient* P);
