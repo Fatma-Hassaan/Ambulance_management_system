@@ -56,7 +56,6 @@ Car* Hospital::AssigningPatient() {
 			EP.dequeue(x, priority);
 			C->AddPatient(x);
 			return C;
-
 		}
 	}
 	if (NP.peek(x) && free_NC > 0) {
@@ -71,5 +70,5 @@ Car* Hospital::AssigningPatient() {
 		C->AddPatient(x);
 		return C;
 	}
-
+	return C;
 }
