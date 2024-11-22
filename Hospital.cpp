@@ -38,7 +38,7 @@ void Hospital:: RecievePatient(Patient* P) {
 Car* Hospital::AssigningPatient() {
 	Car* C = nullptr;
 	Patient* x;
-	int priority = 0;
+	int priority;
 	EP.peek(x, priority);
 	if (x) {
 		if (free_NC > 0) {
