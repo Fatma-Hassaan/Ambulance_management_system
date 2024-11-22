@@ -31,5 +31,6 @@ public:
 	int getNumber_FreeSC();
 	int getNumber_CurrentEP();
 	void RecievePatient(Patient* P);
+	void RecieveBackCar(Car* bCar);
 	Car* AssigningPatient();
 };
