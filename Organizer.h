@@ -31,5 +31,7 @@ public:
     void incrementTimeStep_and_Execute();
     void AddingPatients();
     void HospitalsAssigningPatients();
+    void OutCars(Car* oCar, Patient* p);
+    void BackCars();
     ~Organizer();
 };
