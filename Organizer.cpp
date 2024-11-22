@@ -77,6 +77,80 @@ void Organizer::HospitalsAssigningPatients() {
     }
 }
 
+void Organizer::OutCars(Car* oCar, Patient* p)
+{
+    int pHID = p.getHID; 
+	int pType = p.getPType;
+    
+    int NCnumber = HospitalsList[pHID - 1].getNumber_FreeNC();
+	int SCnumber = HospitalsList[pHID - 1].getNumber_FreeSC();
+
+	while (p.getRequestTime() == timeStep)
+	{
+		switch (pType)
+		{
+		case 1:               //NormalPatient
+			if (NCnumber > 0)
+			{
+				HospitalsList[pHID - 1].NC.dequeue(oCar);
+				OC.enqueue(oCar, -(oCar.getPickupTime()));
+				oCar.setStatus(2);
+				numOfOC++;
+			}
+
+			break;
+		case 2:               //SpecialPatient
+			if (SCnumber > 0)
+			{
+				HospitalsList[pHID - 1].SC.dequeue(oCar);
+				OC.enqueue(oCar, -(oCar.getPickupTime()));
+				oCar.setStatus(2);
+				numOfOC++;
+			}
+
+			break;
+		case 3:               //EmergencyPatient
+			if (NCnumber > 0)
+			{
+				HospitalsList[pHID - 1].NC.dequeue(oCar);
+				OC.enqueue(oCar, -(oCar.getPickupTime()));
+				oCar.setStatus(2);
+				numOfOC++;
+			}
+			else if (SCnumber > 0)
+			{
+				HospitalsList[pHID - 1].SC.dequeue(oCar);
+				OC.enqueue(oCar, -(oCar.getPickupTime()));
+				oCar.setStatus(2);
+				numOfOC++;
+			}
+			else
+			{
+				// EP_Redistribution
+			}
+
+			break;
+		}
+	}
+}
+
+void Organizer::BackCars()
+{
+	Car* bCar;
+	int pri;
+	OC.peek(bCar, pri);
+	while (bCar.getPickupTime() == timeStep)
+	{
+		OC.dequeue(bCar, -(bCar.getPickupTime()));
+		BC.enqueue(bCar, -(bCar.getFinishTime()));
+		bCar.setStatus(3);
+		numOfBC++;
+
+		OC.peek(bCar);
+	}
+	
+}
+
 Organizer::~Organizer() {
     for (int i = 0; i < numOfHospitals; i++) {
         delete[] DistanceMatrix[i];
