@@ -17,6 +17,10 @@ int Hospital:: getHospital_ID() {
 	return H_ID;
 }
 
+int Hospital::getNumber_CurrentEP() {
+	return Current_EP_number;
+}
+
 int Hospital:: getNumber_FreeNC() {
 	return free_NC;
 }
