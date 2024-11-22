@@ -8,6 +8,7 @@
 class Hospital
 {
 private:
+	int TS=0;					//timeStep
 	int H_ID;
 	int total_SC;
 	int total_NC;
