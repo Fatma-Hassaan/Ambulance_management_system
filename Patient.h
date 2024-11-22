@@ -10,11 +10,14 @@ private:
     int severity;
     int pType;
     int waitingTime;
+    int cancelationTime;
 
 public:
     Patient();
 
     Patient(int pType, int PID, int HID, int distance, int requestTime, int severity);
+
+    Patient(int PID, int HID, int cancelationTime);
 
     Patient(const Patient &other);
 
@@ -32,11 +35,15 @@ public:
 
     int getRequestTime() const;
 
+    int getCancelationTime() const;
+
     void setDistance(int distance);
 
     void setPickupTime(int pickupTime);
 
     void setHID(int HID);
+
+    void setCancelationTime(int cancelationTime);
 
     void calculateWaitingTime();
 };
