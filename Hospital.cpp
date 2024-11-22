@@ -18,7 +18,7 @@ void Hospital::incrementTimeStep()
 	TS++;
 }
 
-int Hospital:: getHospital_ID() {
+int Hospital::getHospital_ID() {
 	return H_ID;
 }
 
@@ -26,15 +26,15 @@ int Hospital::getNumber_CurrentEP() {
 	return Current_EP_number;
 }
 
-int Hospital:: getNumber_FreeNC() {
+int Hospital::getNumber_FreeNC() {
 	return free_NC;
 }
 
-int Hospital:: getNumber_FreeSC() {
+int Hospital::getNumber_FreeSC() {
 	return free_SC;
 }
 
-void Hospital:: RecievePatient(Patient* P) {
+void Hospital::RecievePatient(Patient* P) {
 	int patient_Type = P->getP_Type();
 	if (patient_Type == 1)
 		NP.enqueue(P);
@@ -42,6 +42,24 @@ void Hospital:: RecievePatient(Patient* P) {
 		SP.enqueue(P);
 	if (patient_Type == 3)
 		EP.enqueue(P);
+}
+
+void Hospital::RecieveBackCar(Car* bCar)
+{
+	int bCarType = bCar.getCarType();	//check CarType 
+	switch (bCarType)
+	{
+	case 1:			//NormalCar
+		NC.enqueue(bCar);
+		free_NC++;
+		break;
+	case 2:			//SpecialCar
+		SC.enqueue(bCar);
+		free_SC++;
+		break;
+	}
+
+	bCar.setStatus(1);
 }
 
 Car* Hospital::AssigningPatient() {
