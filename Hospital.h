@@ -32,4 +32,7 @@ public:
 	int getNumber_FreeSC();
 	void RecievePatient(Patient* P);
 	Car* AssigningPatient();
+        bool removePatient(Patient* P);
+        void incrementTimeStep();
+        bool isOutOfCars();
 };
