@@ -13,8 +13,17 @@ Hospital::Hospital(int Hospital_ID, int t_NC, int t_SC, int NC_S, int SC_S) : H_
 	}
 }
 
+void Hospital::incrementTimeStep()
+{
+	TS++;
+}
+
 int Hospital:: getHospital_ID() {
 	return H_ID;
+}
+
+int Hospital::getNumber_CurrentEP() {
+	return Current_EP_number;
 }
 
 int Hospital:: getNumber_FreeNC() {
@@ -37,10 +46,9 @@ void Hospital:: RecievePatient(Patient* P) {
 
 Car* Hospital::AssigningPatient() {
 	Car* C = nullptr;
-	Patient* x;
-	int priority = 0;
-	EP.peek(x, priority);
-	if (x) {
+	Patient* x = nullptr;
+	if (Current_EP_number>0) {
+		int priority;
 		if (free_NC > 0) {
 			NC.dequeue(C);
 			EP.dequeue(x, priority);
@@ -52,20 +60,19 @@ Car* Hospital::AssigningPatient() {
 			EP.dequeue(x, priority);
 			C->AddPatient(x);
 			return C;
-
 		}
 	}
-	if (NP.peek(x) && free_NC > 0) {
+	if (Current_NP_number > 0 && free_NC > 0) {
 		NP.dequeue(x);
 		NC.dequeue(C);
 		C->AddPatient(x);
 		return C;
 	}
-	if (SP.peek(x) && free_SC > 0) {
+	if (Current_SP_number > 0 && free_SC > 0) {
 		SP.dequeue(x);
 		SC.dequeue(C);
 		C->AddPatient(x);
 		return C;
 	}
-
+	return C;
 }
