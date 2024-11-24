@@ -62,6 +62,15 @@ void Organizer::AddingPatients() {
         AR.dequeue(P);
         int HospitalID = P->getHID();
         int PatientType = P->PType();
+        Hospital* assignedHospital = HospitalsList[hospitalID - 1];
+        if ((P->getType() == 1 && assignedHospital->getNumber_FreeNC() == 0) ||
+            (P->getType() == 2 && assignedHospital->getNumber_FreeSC() == 0)) {
+            redistributeEmergencyPatient(P); 
+        } else {
+            assignedHospital->RecievePatient(P); 
+   
+        }
+        
         if (PatientType == 3 && ((HospitalsList[HospitalID - 1]->getNumber_FreeNC() + HospitalsList[HospitalID - 1]->getNumber_FreeSC()) <= HospitalsList[HospitalID - 1]->getNumber_CurrentEP())) {
             EP_Redistribution(P);
         }
