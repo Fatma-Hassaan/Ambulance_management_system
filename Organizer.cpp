@@ -3,36 +3,51 @@
 #include <fstream>	//for file reading
 
 
-Organizer::Organizer(string fileName) {
-    int numOfHospitals;
+Organizer::Organizer(fstream& file, string fileName)
+{
+	file.open(fileName, ios::in);
+	if (file.fail()) { cout << "File Open Failure!!"; }
+	int numOfHospitals;
+	file >> numOfHospitals;
 
     DistanceMatrix = new int* [numOfHospitals];
-    for (int i = 0; i < numOfHospitals; i++) {
+    for (int i = 0; i < numOfHospitals; i++)
+    {
         DistanceMatrix[i] = new int[numOfHospitals];
+	for (int j = 0; j < numOfHospitals; j++)
+		{
+			file >> DistanceMatrix[i][j];	//Filling DistanceMatrix
+		}
     }
-    //NCS,SCS
-    //Filling DistanceMatrix
-
-    HospitalsList = new Hospital * [numOfHospitals];
-    for (int i = 0; i < numOfHospitals; i++) {
+	
+	// Assigning Car speeds
+	file >> SCS;
+	file >> NCS;
+	
+    HospitalsList = new Hospital* [numOfHospitals];
+    for (int i = 0; i < numOfHospitals; i++)
+    {
         //HospitalsList[i] = new Hospital(The following line);
         //Hospital(Hospital ID which starts with 1, number Of NC in the hospitaL, number Of SC in the hospitaL, Normal Car Speed, Special Car Speed);
     }
 
     //numOfAR
-    for (int i = 0; i < numOfAR; i++) {
+    for (int i = 0; i < numOfAR; i++)
+    {
         //make the patients using the patients constructor the Naqeeb made (The following line)
         //Patient(int pType, int PID, int HID, int distance, int requestTime, int severity);
         //Add the parients to the all requests queue
     }
 
     //numOfCR
-    for (int i = 0; i < numOfCR; i++) {
+    for (int i = 0; i < numOfCR; i++)
+    {
         //make other patients that contain only the patient ID, Hospital ID, and the cancellation timestep. Use the constructor (The following line)
         //Patient(int PID, int HID, CancellationTime);
         //Add the parients to the cancellation requests queue
     }
-
+	
+	file.close();
 }
 
 void Organizer::incrementTimeStep_and_Execute() {
