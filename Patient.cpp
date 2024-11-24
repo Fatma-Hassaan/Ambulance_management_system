@@ -1,3 +1,4 @@
+
 #include "Patient.h"
 
 Patient::Patient() : PID(0), requestTime(0), pickupTimes(0), HID(0), distance(0), severity(0),
@@ -44,3 +45,4 @@ void Patient::setCancelationTime(int _cancelationTime) { cancelationTime = _canc
 void Patient::calculateWaitingTime() {
     waitingTime = (severity * 100) / (distance + 1);
 }
+
