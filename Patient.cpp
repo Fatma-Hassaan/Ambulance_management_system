@@ -10,7 +10,7 @@ Patient::Patient(int _pType, int _PID, int _HID, int _distance, int _requestTime
 
 Patient::Patient(int _PID, int _HID, int _cancelationTime) :
         PID(_PID), HID(_HID), requestTime(0), pickupTimes(0), distance(0), severity(0),
-        pType(0), waitingTime(0), cancelationTime(_cancelationTime) {}
+        pType(0), waitingTime(0), cancelationTime(_cancelationTime),  isPickedUp(false), isCancelled(false) {}
 
 // copy constructor
 Patient::Patient(const Patient &other) :
