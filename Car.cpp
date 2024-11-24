@@ -1,3 +1,4 @@
+
 #include "Car.h"
 
 Car::Car() : carType(0), speed(0), status(1), busyTime(0), AT(0), p(nullptr), pickupTime(0), finishTime(0), HID(0) {}
@@ -77,3 +78,4 @@ void Car::setFinishTime(int _finishTime) { finishTime = _finishTime; }
 void Car::calculateBusyTime() {
     busyTime = finishTime - AT;
 }
+

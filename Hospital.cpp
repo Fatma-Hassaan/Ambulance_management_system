@@ -1,3 +1,4 @@
+
 #include "Hospital.h"
 
 Hospital::Hospital(int Hospital_ID, int t_NC, int t_SC, int NC_S, int SC_S) : H_ID(Hospital_ID), total_NC(t_NC), total_SC(t_SC), NC_Speed(NC_S), SC_Speed(SC_S) {
@@ -76,3 +77,4 @@ Car* Hospital::AssigningPatient() {
 	}
 	return C;
 }
+

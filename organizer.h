@@ -18,3 +18,4 @@ public:
     void calculateDistances();
     void displayDistances();
 };
+
