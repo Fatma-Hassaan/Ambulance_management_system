@@ -6,17 +6,17 @@
 Organizer::Organizer(fstream& file, string fileName)
 {
 	file.open(fileName, ios::in);
-	if (file.fail()) { cout << "File Open Failure!!"; }
+	if (file.fail()) { cout << "File Open Failure!!"; }	//Check that the File opens correctly
 	
-	file >> numOfHospitals;
+	file >> numOfHospitals;		//Assign number of Hospitals
 
     DistanceMatrix = new int* [numOfHospitals];
-    for (int i = 0; i < numOfHospitals; i++)
+    for (int i = 0; i < numOfHospitals; i++)		//Filling DistanceMatrix
     {
         DistanceMatrix[i] = new int[numOfHospitals];
 	for (int j = 0; j < numOfHospitals; j++)
 		{
-			file >> DistanceMatrix[i][j];	//Filling DistanceMatrix
+			file >> DistanceMatrix[i][j];	
 		}
     }
 	
@@ -25,16 +25,16 @@ Organizer::Organizer(fstream& file, string fileName)
 	file >> NCS;
 	
     HospitalsList = new Hospital* [numOfHospitals];
-    for (int i = 0; i < numOfHospitals; i++)
+    for (int i = 0; i < numOfHospitals; i++)		//Initializig each Hospital with its data
     {
 	int tSC, tNC;
 	file >> tSC; file >> tNC
 	HospitalsList[i] = new Hospital(i+1, tNC, tSC, NCS, SCS);
     }
 
-    file >> numOfAR;
+    file >> numOfAR;		//Assign number of all requests
 
-    for (int i = 0; i < numOfAR; i++)
+    for (int i = 0; i < numOfAR; i++)		//Initializig each Patient with its data
     {
 	string sPT;
 	file >> sPT;
@@ -64,12 +64,12 @@ Organizer::Organizer(fstream& file, string fileName)
 	
 	Patient* ptr = new Patient(iPT, Pid, Hid, dis, RT, sev);
 
-	AR.enqueue(ptr);
+	AR.enqueue(ptr);		//Enqueue Patients in AllPatients List
     }
 
-    file >> numOfCR;
+    file >> numOfCR;		//Assign number of Cancellation Requests
 
-    for (int i = 0; i < numOfCR; i++)
+    for (int i = 0; i < numOfCR; i++)		//Initializing Patients with Cancellation Requests
     {
 	int CT; file >> CT;
 	int Pid; file >> Pid;
@@ -81,6 +81,7 @@ Organizer::Organizer(fstream& file, string fileName)
 	
 	file.close();
 }
+
 void Organizer::incrementTimeStep_and_Execute() {
     timeStep++;
     for (int i = 0; i < numOfHospitals; i++) {
