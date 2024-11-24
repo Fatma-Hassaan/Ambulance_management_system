@@ -38,6 +38,20 @@ void Car::setFinishTime(int _finishTime) { finishTime = _finishTime; }
 void Car::calculateBusyTime() {
     busyTime = finishTime - AT;
 }
+
+Car::Car() : assignedPatient(nullptr) {}
+
+void Car::assignPatient(Patient* P) {
+    assignedPatient = P;
+}
+
+void Car::removePatient() {
+    assignedPatient = nullptr;
+}
+
+Patient* Car::getAssignedPatient() {
+    return assignedPatient;
+}
 =======
 #include "Car.h"
 
