@@ -88,29 +88,39 @@ void Organizer::HospitalsAssigningPatients() {
     }
 }
 
-void Organizer::cancelRequest(int patientID, int currentTime) {
-    Car* car;
-    priQueue<Car*> tempQueue;
 
+void Organizer::handleCancellation(Patient* canceledPatient) {
+    int HID = canceledPatient->getHID();
+    Hospital* assignedHospital = HospitalsList[hospitalID - 1];
+
+    // Cancellation before car departure
+    if (assignedHospital->removePatient(canceledPatient)) {
+        
+        CR.enqueue(canceledPatient); 
+        return;
+    }
+
+    // Cancellation after car departure
+    Car* assignedCar = nullptr;
+
+   
+    priQueue<Car*> tempQueue;
     while (!OC.isEmpty()) {
-        OC.dequeue(car);
-        if (car->getPatientID() == patientID) {
-            if (car->getPickupTime() > currentTime) {
-                // Cancellation before pickup
-                BC.enqueue(car, currentTime); 
-                cout << "Patient " << patientID << " cancelled before pickup.\n";
-            } else {
-                // Cancellation after pickup
-                cout << "Patient " << patientID << " cancelled after pickup.\n";
-            }
+        OC.dequeue(assignedCar);
+        if (assignedCar->getAssignedPatient() == canceledPatient) {
+            assignedCar->removePatient(); 
+            BC.enqueue(assignedCar);     
+            CR.enqueue(canceledPatient); 
         } else {
-            tempQueue.enqueue(car, -car->getPickupTime());
+            tempQueue.enqueue(assignedCar, assignedCar->getPickupTime());
         }
     }
 
+ 
     while (!tempQueue.isEmpty()) {
-        tempQueue.dequeue(car);
-        OC.enqueue(car, -car->getPickupTime());
+        Car* tempCar;
+        tempQueue.dequeue(tempCar);
+        OC.enqueue(tempCar, tempCar->getPickupTime());
     }
 }
 
