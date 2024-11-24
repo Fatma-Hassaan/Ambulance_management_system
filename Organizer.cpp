@@ -36,12 +36,39 @@ Organizer::Organizer(fstream& file, string fileName)
 
     for (int i = 0; i < numOfAR; i++)
     {
-        //make the patients using the patients constructor the Naqeeb made (The following line)
-        //Patient(int pType, int PID, int HID, int distance, int requestTime, int severity);
-        //Add the parients to the all requests queue
+	string sPT;
+	file >> sPT;
+	switch(sPT)
+	{ case "NP": 
+		int iPT = 1; 
+		int RT; file >> RT; 
+		int Pid; file >> Pid; 
+		int Hid; file >> Hid;
+		int dis; file >> dis;
+		int sev = 0;
+	  case "SP":
+		int iPT = 2; 
+		int RT; file >> RT; 
+		int Pid; file >> Pid; 
+		int Hid; file >> Hid;
+		int dis; file >> dis;
+		int sev = 0;
+	  case "EP":
+		int iPT = 3; 
+		int RT; file >> RT; 
+		int Pid; file >> Pid; 
+		int Hid; file >> Hid;
+		int dis; file >> dis;
+		int sev; file >> sev;
+	}
+	
+	Patient* ptr = new Patient(iPT, Pid, Hid, dis, RT, sev);
+
+	AR.enqueue(ptr);
     }
 
-    //numOfCR
+    file >> numOfCR;
+
     for (int i = 0; i < numOfCR; i++)
     {
         //make other patients that contain only the patient ID, Hospital ID, and the cancellation timestep. Use the constructor (The following line)
