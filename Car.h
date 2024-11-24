@@ -13,6 +13,7 @@ private:
     int pickupTime;
     int finishTime;
     int HID;
+    Patient* assignedPatient;
 
 public:
     Car();
@@ -46,4 +47,7 @@ public:
     void setFinishTime(int finishTime);
 
     void calculateBusyTime();
+    void assignPatient(Patient* P);
+    void removePatient();
+    Patient* getAssignedPatient();
 };
