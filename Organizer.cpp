@@ -185,15 +185,22 @@ void Organizer::BackCars()
 {
 	Car* bCar;
 	int pri;
-	OC.peek(bCar, pri);
-	while (bCar.getPickupTime() == timeStep)
+	BC.peek(bCar, pri);
+	while (bCar.getFinishTime() == timeStep)			// when timestep reaches the Finishtime
 	{
-		OC.dequeue(bCar, -(bCar.getPickupTime()));
-		BC.enqueue(bCar, -(bCar.getFinishTime()));
-		bCar.setStatus(3);
-		numOfBC++;
+		BC.dequeue(bCar, -(bCar.getFinishTime()));		//Dequeue Car from BackCars List
 
-		OC.peek(bCar);
+		Patient* ptr = bCar.getPatient();
+		FP.enqueue(ptr);					//Enqueue Patient inside FinishedPatients
+		bCar.removePatient();					//List and remove it from the Car
+									
+		bCar.setStatus(1);					//Set Car status back to ready and 
+		numOfBC--;						// decrement number of BackCars by 1
+
+		int Hid = bCar.getHID;
+		HospitalsList[Hid - 1].RecieveBackCar(bCar);		//Send the Car back to its Hospital
+
+		BC.peek(bCar, pri); //Priority??
 	}
 	
 }
