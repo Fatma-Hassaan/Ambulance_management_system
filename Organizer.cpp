@@ -1,3 +1,4 @@
+
 #include "Organizer.h"
 #include <string.h>
 
@@ -92,3 +93,4 @@ Organizer::~Organizer() {
     HospitalsList = nullptr;
 
 }
+
