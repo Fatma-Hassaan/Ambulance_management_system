@@ -27,6 +27,7 @@ Organizer::Organizer(fstream& file, string fileName)
     HospitalsList = new Hospital* [numOfHospitals];
     for (int i = 0; i < numOfHospitals; i++)
     {
+	
         //HospitalsList[i] = new Hospital(The following line);
         //Hospital(Hospital ID which starts with 1, number Of NC in the hospitaL, number Of SC in the hospitaL, Normal Car Speed, Special Car Speed);
     }
