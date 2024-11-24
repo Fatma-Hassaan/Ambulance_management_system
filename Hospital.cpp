@@ -46,8 +46,8 @@ void Hospital::RecievePatient(Patient* P) {
 
 void Hospital::RecieveBackCar(Car* bCar)
 {
-	int bCarType = bCar.getCarType();	//check CarType 
-	switch (bCarType)
+	int bCarType = bCar.getCarType();	//get CarType 
+	switch (bCarType)			//Enqueue Car in coressponding List
 	{
 	case 1:			//NormalCar
 		NC.enqueue(bCar);
@@ -58,8 +58,6 @@ void Hospital::RecieveBackCar(Car* bCar)
 		free_SC++;
 		break;
 	}
-
-	bCar.setStatus(1);
 }
 
 Car* Hospital::AssigningPatient() {
