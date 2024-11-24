@@ -16,9 +16,9 @@ private:
 	int** DistanceMatrix;
     int NCS;                    //Normal Car Speed
     int SCS;                    //Special Car Speed
-    int numOfAR;                //number of All Requests
+        int numOfAR;                //number of All Requests
 	int numOfReDisEP;			//number of Redistributed Emergency Patients
-    int numOfCR;                //number of Cancelled Requests
+        int numOfCR;                //number of Cancelled Requests
 	int numOfOC;				//number of Out Cars
 	int numOfBC;				//number of Back Cars
 	LinkedQueue<Patient*> AR;	//All Requests
@@ -31,5 +31,6 @@ public:
     void incrementTimeStep_and_Execute();
     void AddingPatients();
     void HospitalsAssigningPatients();
+    void cancelRequest(int patientID, int currentTime);
     ~Organizer();
 };
