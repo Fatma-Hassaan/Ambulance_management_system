@@ -27,10 +27,11 @@ private:
 	priQueue<Car*> OC;			//Out Cars
 	priQueue<Car*> BC;			//Back Cars
 public:
-	Organizer(string fileName);
+    Organizer(string fileName);
     void incrementTimeStep_and_Execute();
     void AddingPatients();
     void HospitalsAssigningPatients();
     void cancelRequest(int patientID, int currentTime);
+    void handleCancellation(Patient* canceledPatient);
     ~Organizer();
 };
