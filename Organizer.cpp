@@ -38,11 +38,20 @@ Organizer::Organizer(string fileName) {
 
 void Organizer::incrementTimeStep_and_Execute() {
     timeStep++;
+
+
+    Patient* cancelPatient;
+    CR.peek(cancelPatient);
+    while (cancelPatient && cancelPatient->getCancellationTime() == timeStep) {
+        cancelRequest(cancelPatient->getID(), timeStep);
+        CR.dequeue(cancelPatient);
+        CR.peek(cancelPatient);
     for (int i = 0; i < numOfHospitals; i++) {
         HospitalsList[i - 1]->incrementTimeStep();
     }
     AddingPatients();
     HospitalsAssigningPatients();
+    
 }
 
 
@@ -78,6 +87,34 @@ void Organizer::HospitalsAssigningPatients() {
 
     }
 }
+
+void Organizer::cancelRequest(int patientID, int currentTime) {
+    Car* car;
+    priQueue<Car*> tempQueue;
+
+    while (!OC.isEmpty()) {
+        OC.dequeue(car);
+        if (car->getPatientID() == patientID) {
+            if (car->getPickupTime() > currentTime) {
+                // Cancellation before pickup
+                BC.enqueue(car, currentTime); 
+                cout << "Patient " << patientID << " cancelled before pickup.\n";
+            } else {
+                // Cancellation after pickup
+                cout << "Patient " << patientID << " cancelled after pickup.\n";
+            }
+        } else {
+            tempQueue.enqueue(car, -car->getPickupTime());
+        }
+    }
+
+    while (!tempQueue.isEmpty()) {
+        tempQueue.dequeue(car);
+        OC.enqueue(car, -car->getPickupTime());
+    }
+}
+
+
 
 Organizer::~Organizer() {
     for (int i = 0; i < numOfHospitals; i++) {
