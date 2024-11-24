@@ -71,14 +71,16 @@ Organizer::Organizer(fstream& file, string fileName)
 
     for (int i = 0; i < numOfCR; i++)
     {
-        //make other patients that contain only the patient ID, Hospital ID, and the cancellation timestep. Use the constructor (The following line)
-        //Patient(int PID, int HID, CancellationTime);
-        //Add the parients to the cancellation requests queue
+	int CT; file >> CT;
+	int Pid; file >> Pid;
+	int Hid; file >> Hid;
+	Patient* ptr = new Patient(Pid, Hid, CT);
+
+        CR.enqueue(ptr);
     }
 	
 	file.close();
 }
-
 void Organizer::incrementTimeStep_and_Execute() {
     timeStep++;
     for (int i = 0; i < numOfHospitals; i++) {
