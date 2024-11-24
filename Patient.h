@@ -11,6 +11,9 @@ private:
     int pType;
     int waitingTime;
     int cancelationTime;
+    bool isPickedUp;
+    bool isCancelled;
+
 
 public:
     Patient();
