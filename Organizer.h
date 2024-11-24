@@ -27,9 +27,12 @@ private:
 	priQueue<Car*> OC;			//Out Cars
 	priQueue<Car*> BC;			//Back Cars
 public:
-	Organizer(string fileName);
+	Organizer(fstream& file, string fileName);
     void incrementTimeStep_and_Execute();
     void AddingPatients();
     void HospitalsAssigningPatients();
+	void OutCars();
+	void BackCars();
+	void EP_Redistribution(Patient* P);
     ~Organizer();
 };

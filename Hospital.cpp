@@ -4,11 +4,11 @@ Hospital::Hospital(int Hospital_ID, int t_NC, int t_SC, int NC_S, int SC_S) : H_
 	free_NC = total_NC;
 	free_SC = total_SC;
 	for (int i = 0; i < total_NC; i++) {
-		Car* C(1, NC_Speed, H_ID);
+		Car* C= new Car(1, NC_Speed, H_ID);
 		NC.enqueue(C);
 	}
 	for (int i = 0; i < total_SC; i++) {
-		Car* C = (2, SC_Speed, H_ID);
+		Car* C = new Car(2, SC_Speed, H_ID);
 		SC.enqueue(C);
 	}
 }
@@ -35,13 +35,31 @@ int Hospital:: getNumber_FreeSC() {
 }
 
 void Hospital:: RecievePatient(Patient* P) {
-	int patient_Type = P->getP_Type();
+	int patient_Type = P->getPType();
 	if (patient_Type == 1)
 		NP.enqueue(P);
 	if (patient_Type == 2)
 		SP.enqueue(P);
 	if (patient_Type == 3)
-		EP.enqueue(P);
+		EP.enqueue(P, P->getSeverity());
+}
+
+void Hospital::RecieveBackCar(Car* bCar)
+{
+	int bCarType = bCar->getCarType();	//check CarType 
+	switch (bCarType)
+	{
+	case 1:			//NormalCar
+		NC.enqueue(bCar);
+		free_NC++;
+		break;
+	case 2:			//SpecialCar
+		SC.enqueue(bCar);
+		free_SC++;
+		break;
+	}
+
+	bCar->setStatus(1);
 }
 
 Car* Hospital::AssigningPatient() {
@@ -52,26 +70,26 @@ Car* Hospital::AssigningPatient() {
 		if (free_NC > 0) {
 			NC.dequeue(C);
 			EP.dequeue(x, priority);
-			C->AddPatient(x);
+			C->setPatient(x);
 			return C;
 		}
 		if (free_SC > 0) {
 			NC.dequeue(C);
 			EP.dequeue(x, priority);
-			C->AddPatient(x);
+			C->setPatient(x);
 			return C;
 		}
 	}
 	if (Current_NP_number > 0 && free_NC > 0) {
 		NP.dequeue(x);
 		NC.dequeue(C);
-		C->AddPatient(x);
+		C->setPatient(x);
 		return C;
 	}
 	if (Current_SP_number > 0 && free_SC > 0) {
 		SP.dequeue(x);
 		SC.dequeue(C);
-		C->AddPatient(x);
+		C->setPatient(x);
 		return C;
 	}
 	return C;

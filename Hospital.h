@@ -15,9 +15,9 @@ private:
 	int free_NC;
 	int NC_Speed;
 	int SC_Speed;
-	int Current_NP_number;
-	int Current_SP_number;
-	int Current_EP_number;
+	int Current_NP_number=0;
+	int Current_SP_number=0;
+	int Current_EP_number=0;
 	LinkedQueue<Patient*> NP;
 	LinkedQueue<Patient*> SP;
 	priQueue<Patient*> EP;
@@ -27,9 +27,10 @@ public:
 	Hospital(int Hospital_ID, int t_NC, int t_SC, int NC_S, int SC_S);
 	void incrementTimeStep();
 	int getHospital_ID();
-	int getNumber_CurrentEP();
 	int getNumber_FreeNC();
 	int getNumber_FreeSC();
+	int getNumber_CurrentEP();
 	void RecievePatient(Patient* P);
+	void RecieveBackCar(Car* bCar);
 	Car* AssigningPatient();
 };
