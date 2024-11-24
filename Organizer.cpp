@@ -114,6 +114,34 @@ void Organizer::cancelRequest(int patientID, int currentTime) {
     }
 }
 
+void Organizer::redistributeEmergencyPatient(Patient* P) {
+    int currentHospitalID = P->getHID();
+    int patientType = P->getType(); 
+    bool redistributed = false;
+    for (int i = 0; i < numOfHospitals; i++) {
+        if (i + 1 == currentHospitalID) continue;
+
+        Hospital* targetHospital = HospitalsList[i];
+        if (patientType == 1 && targetHospital->getNumber_FreeNC() > 0) {
+            
+            targetHospital->RecievePatient(P);
+            P->setHID(i + 1); 
+            redistributed = true;
+            break;
+        } else if (patientType == 2 && targetHospital->getNumber_FreeSC() > 0) {
+           
+            targetHospital->RecievePatient(P);
+            P->setHID(i + 1); 
+            redistributed = true;
+            break;
+        }
+    }
+
+    if (!redistributed) {
+     
+        AR.enqueue(P);
+    }
+}
 
 
 Organizer::~Organizer() {
