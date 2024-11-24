@@ -7,7 +7,7 @@ Organizer::Organizer(fstream& file, string fileName)
 {
 	file.open(fileName, ios::in);
 	if (file.fail()) { cout << "File Open Failure!!"; }
-	int numOfHospitals;
+	
 	file >> numOfHospitals;
 
     DistanceMatrix = new int* [numOfHospitals];
