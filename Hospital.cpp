@@ -78,3 +78,13 @@ Car* Hospital::AssigningPatient() {
 	return C;
 }
 
+bool Hospital::removePatient(Patient* P) {
+    return waitingQueue.remove(P) || activeQueue.remove(P);
+}
+
+
+
+bool Hospital::isOutOfCars() {
+    return availableCars.isEmpty();
+}
+
