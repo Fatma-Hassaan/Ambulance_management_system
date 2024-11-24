@@ -3,9 +3,9 @@
 
 Car::Car() : carType(0), speed(0), status(1), busyTime(0), AT(0), p(nullptr), pickupTime(0), finishTime(0), HID(0) {}
 
-Car::Car(int _carType, int _speed, int _HID) : carType(_carType), speed(_speed), HID(_HID),
+Car::Car(int _carType, int _speed, int _HID, int PID) : PID(PID), carType(_carType), speed(_speed), HID(_HID),
                                                status(1), busyTime(0), AT(0), p(nullptr), pickupTime(0),
-                                               finishTime(0) {}
+                                               finishTime(0), assignedPatient(nullptr) {}
 
 Car::Car(const Car &other) : carType(other.carType), speed(other.speed), status(other.status),
                              busyTime(other.busyTime), AT(other.AT), p(other.p), pickupTime(other.pickupTime),
