@@ -13,6 +13,10 @@ private:
     int pickupTime;
     int finishTime;
     int HID;
+    int PID;
+    Patient* assignedPatient;
+};
+
 
 public:
     Car();
