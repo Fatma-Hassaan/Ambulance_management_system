@@ -5,6 +5,9 @@
 #include "Car.h"
 #include "Hospital.h"
 #include <string>
+#include "TimeStep.h"
+
+
 using namespace std;
 
 class Organizer
@@ -16,22 +19,24 @@ private:
 	int** DistanceMatrix;
     int NCS;                    //Normal Car Speed
     int SCS;                    //Special Car Speed
-        int numOfAR;                //number of All Requests
+    int numOfAR;                //number of All Requests
 	int numOfReDisEP;			//number of Redistributed Emergency Patients
-        int numOfCR;                //number of Cancelled Requests
+    int numOfCR;                //number of Cancelled Requests
 	int numOfOC;				//number of Out Cars
 	int numOfBC;				//number of Back Cars
+	int numOfFP;				//number of Finished Patients
 	LinkedQueue<Patient*> AR;	//All Requests
 	LinkedQueue<Patient*> FP;	//Finished Patients
 	LinkedQueue<Patient*> CR;	//Cancelled Requests
 	priQueue<Car*> OC;			//Out Cars
 	priQueue<Car*> BC;			//Back Cars
 public:
-    Organizer(string fileName);
+	Organizer(fstream& file, string fileName);
     void incrementTimeStep_and_Execute();
     void AddingPatients();
     void HospitalsAssigningPatients();
-    void cancelRequest(int patientID, int currentTime);
-    void handleCancellation(Patient* canceledPatient);
+	void OutCars();
+	void BackCars();
+	void EP_Redistribution(Patient* P);
     ~Organizer();
 };

@@ -1,5 +1,5 @@
 #pragma once
-
+#include "TimeStep.h"
 #include "Patient.h"
 
 class Car {
@@ -9,18 +9,17 @@ private:
     int status;
     int busyTime;
     int AT;
-    Patient *p;
+    Patient* p;
     int pickupTime;
     int finishTime;
     int HID;
-    Patient* assignedPatient;
 
 public:
     Car();
 
     Car(int carType, int speed, int HID);
 
-    Car(const Car &other);
+    Car(const Car& other);
 
     int getCarType() const;
 
@@ -36,18 +35,19 @@ public:
 
     int getHID() const;
 
-    Patient *getPatient() const;
+    Patient* getPatient() const;
 
     void setStatus(int status);
 
-    void setPatient(Patient *p);
+    void setAT(int _AT);
+
+    void setPatient(Patient* p);
 
     void setPickupTime(int pickupTime);
 
     void setFinishTime(int finishTime);
 
     void calculateBusyTime();
-    void assignPatient(Patient* P);
+
     void removePatient();
-    Patient* getAssignedPatient();
 };
