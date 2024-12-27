@@ -8,13 +8,18 @@
 
 Organizer::Organizer(fstream & file, string fileName)
 {
+    numOfOC = 0;
+    numOfBC = 0;
+    numOfFP = 0;
+    numOfReDisEP = 0;
+    timeStep = 0;
     file.open(fileName, ios::in);
-    if (file.fail()) { cout << "File Open Failure!!"; }	//Check that the File opens correctly
+    if (file.fail()) { cout << "File Open Failure!!"; }	
 
-    file >> numOfHospitals;		//Assign number of Hospitals
+    file >> numOfHospitals;		
 
     DistanceMatrix = new int* [numOfHospitals];
-    for (int i = 0; i < numOfHospitals; i++)		//Filling DistanceMatrix
+    for (int i = 0; i < numOfHospitals; i++)	
     {
         DistanceMatrix[i] = new int[numOfHospitals];
         for (int j = 0; j < numOfHospitals; j++)
@@ -23,21 +28,20 @@ Organizer::Organizer(fstream & file, string fileName)
         }
     }
 
-    // Assigning Car speeds
+
     file >> SCS;
     file >> NCS;
 
     HospitalsList = new Hospital * [numOfHospitals];
-    for (int i = 0; i < numOfHospitals; i++)		//Initializig each Hospital with its data
+    for (int i = 0; i < numOfHospitals; i++)	
     {
         int tSC, tNC;
         file >> tSC; file >> tNC;
         HospitalsList[i] = new Hospital(i + 1, tNC, tSC, NCS, SCS);
     }
 
-    file >> numOfAR;		//Assign number of all requests
-
-    for (int i = 0; i < numOfAR; i++)		//Initializig each Patient with its data
+    file >> numOfAR;	
+    for (int i = 0; i < numOfAR; i++)		
     {
         int iPT;
         int RT;
@@ -74,12 +78,12 @@ Organizer::Organizer(fstream & file, string fileName)
 
         Patient* ptr = new Patient(iPT, Pid, Hid, dis, RT, sev);
 
-        AR.enqueue(ptr);		//Enqueue Patients in AllPatients List
+        AR.enqueue(ptr);		
     }
 
-    file >> numOfCR;		//Assign number of Cancellation Requests
+    file >> numOfCR;		
 
-    for (int i = 0; i < numOfCR; i++)		//Initializing Patients with Cancellation Requests
+    for (int i = 0; i < numOfCR; i++)	
     {
         int CT; file >> CT;
         int Pid; file >> Pid;
@@ -94,75 +98,61 @@ Organizer::Organizer(fstream & file, string fileName)
 
 
 void Organizer::incrementTimeStep_and_Execute() {
-    bool cont = true;
-    while (cont) {
+    bool simulationComplete = false;
+    
+    while (!simulationComplete) {
         timeStep++;
-        //for (int i = 0; i < numOfHospitals; i++) {
-        //    HospitalsList[i - 1]->incrementTimeStep();
-        //}
-        AddingPatients();
-
+        
+        AddingPatients();        
+        ProcessCancellations();  
+        HandleOutCars();         
+        HandleBackCars();        
+        
+        // 2. Update hospitals
         for (int i = 0; i < numOfHospitals; i++) {
-            srand(time(0));
-            int x;
-            x = (rand() % (100 - 2)) + 1;
-            cout << "random:" << x<<endl;
-            if (10 <= x && x < 40) {
-                Patient* P = nullptr;
-                P = HospitalsList[i]->simulatePatient(x);
-                if (P != nullptr) {
-                    FP.enqueue(P);
-                    numOfFP++;
-                }
-
-            }
-            if (40 <= x && x < 75) {
-                Car* C = nullptr;
-                C = HospitalsList[i]->simulateCar(x);
-                if (C != nullptr) {
-                    OC.enqueue(C, 15);
-                    numOfOC++;
-                }
-            }
-            if (80 <= x && x < 90) {
-                int pri;
-                Car* C = nullptr;
-                if (!OC.isEmpty()) {
-                    OC.dequeue(C, pri);
-                    numOfOC--;
-                    BC.enqueue(C, pri);
-                    numOfBC++;
-                }
-            }
-            if (91 <= x && x < 95) {
-                int pri;
-                Car* C = nullptr;
-                if (!BC.isEmpty()) {
-                    BC.dequeue(C, pri);
-                    numOfBC--;
-                    HospitalsList[C->getHID() - 1]->RecieveBackCar(C);
-                }
+            // Try to assign available cars to waiting patients
+            Car* assignedCar = HospitalsList[i]->AssigningPatient();
+            if (assignedCar) {
+                int pickupTime = timeStep + (assignedCar->getPatient()->getDistance() / assignedCar->getSpeed());
+                assignedCar->setPickupTime(pickupTime);
+                OC.enqueue(assignedCar, -pickupTime); // negative for priority queue ordering
+                numOfOC++;
             }
         }
-        if (timeStep > 5 && (HospitalsList[0]->getNumber_CurrentEP() + HospitalsList[0]->getNumber_CurrentNP() + HospitalsList[0]->getNumber_CurrentSP()
-            + HospitalsList[1]->getNumber_CurrentEP() + HospitalsList[1]->getNumber_CurrentNP() + HospitalsList[1]->getNumber_CurrentSP() == 0)) {
-            cont = false;
+
+        PrintTimeStepStatus();
+        
+        if (IsSimulationComplete()) {
+            simulationComplete = true;
+            GenerateOutputFile();
         }
-        cout << endl<< "Current TimeStep: " << timeStep  << endl;
-        for (int i = 0; i < numOfHospitals; i++) {
-            cout << "Hospital "<< i<< " Current EP Patients: "<<  HospitalsList[i]->getNumber_CurrentEP() << endl;
-            cout << "Hospital " << i << " Current NP Patients: " << HospitalsList[i]->getNumber_CurrentNP() << endl;
-            cout << "Hospital " << i << " Current SP Patients: " << HospitalsList[i]->getNumber_CurrentSP() << endl;
-            cout << "Hospital " << i << " Current Free Special Cars: " << HospitalsList[i]->getNumber_FreeSC() << endl;
-            cout << "Hospital " << i << " Current Free Normal Cars: " << HospitalsList[i]->getNumber_FreeNC() << endl;
+    }
+}
+
+bool Organizer::IsSimulationComplete() {
+    if (timeStep < 5) return false;
+    
+    for (int i = 0; i < numOfHospitals; i++) {
+        if (HospitalsList[i]->getNumber_CurrentEP() > 0 ||
+            HospitalsList[i]->getNumber_CurrentNP() > 0 ||
+            HospitalsList[i]->getNumber_CurrentSP() > 0) {
+            return false;
         }
-        cout << "Current number of Out Cars: " << numOfOC << endl;
-        cout << "Current number of Back Cars: " << numOfBC << endl;
-        cout << "Number of Finished Patients: " << numOfFP << endl;
+    }
+    
+    return (numOfOC == 0 && numOfBC == 0);
+}
 
-
-
-        //HospitalsAssigningPatients();
+void Organizer::PrintTimeStepStatus() {
+    cout << "\nTimestep: " << timeStep << endl;
+    cout << "Out Cars: " << numOfOC << " Back Cars: " << numOfBC << endl;
+    cout << "Finished Patients: " << numOfFP << endl;
+    
+    for (int i = 0; i < numOfHospitals; i++) {
+        cout << "\nHospital " << i+1 << " Status:" << endl;
+        cout << "EP: " << HospitalsList[i]->getNumber_CurrentEP();
+        cout << " NP: " << HospitalsList[i]->getNumber_CurrentNP();
+        cout << " SP: " << HospitalsList[i]->getNumber_CurrentSP() << endl;
     }
 }
 
@@ -298,4 +288,118 @@ Organizer::~Organizer() {
     HospitalsList = nullptr;
     
     cout << timeStep;
+}
+
+void Organizer::ProcessCancellations() {
+    Patient* P;
+    if (!CR.isEmpty()) {
+        CR.peek(P);
+        while (P->getCancelationTime() == timeStep) {
+            CR.dequeue(P);
+
+            // Try to cancel from waiting queues in hospitals
+            int hospitalId = P->getHID() - 1;
+            Hospital* hospital = HospitalsList[hospitalId];
+            
+            // Try to cancel from out cars, using inherited methods
+            if (!CancelQueue::cancelBeforePickup(P, OC, BC)) {
+                // Check if patient is in a car that's already moving
+                CancelQueue::checkAndCancelOnCar(P, OC, BC);
+            }
+
+            if (!CR.isEmpty()) {
+                CR.peek(P);
+            } else {
+                break;
+            }
+        }
+    }
+}
+
+void Organizer::HandleOutCars() {
+    Car* C;
+    int pri;
+    if (!OC.isEmpty()) {
+        OC.peek(C, pri);
+        while (pri == -timeStep) {
+            OC.dequeue(C, pri);
+            BC.enqueue(C, -(C->getFinishTime()));
+            C->setStatus(3);
+            numOfOC--;
+            numOfBC++;
+
+            if (!OC.isEmpty()) {
+                OC.peek(C, pri);
+            } else {
+                break;
+            }
+        }
+    }
+}
+
+void Organizer::HandleBackCars() {
+    Car* C;
+    int pri;
+    if (!BC.isEmpty()) {
+        BC.peek(C, pri);
+        while (C->getFinishTime() == timeStep) {
+            BC.dequeue(C, pri);
+            
+            Patient* ptr = C->getPatient();
+            FP.enqueue(ptr);
+            C->removePatient();
+            
+            C->setStatus(1);
+            numOfBC--;
+            
+            int Hid = C->getHID();
+            HospitalsList[Hid - 1]->RecieveBackCar(C);
+            
+            if (!BC.isEmpty()) {
+                BC.peek(C, pri);
+            } else {
+                break;
+            }
+        }
+    }
+}
+
+void Organizer::GenerateOutputFile() {
+    ofstream outFile("simulation_output.txt");
+    
+    if (!outFile.is_open()) {
+        cout << "Error: Could not create output file" << endl;
+        return;
+    }
+
+    outFile << "Simulation Ended at TimeStep " << timeStep << endl;
+    outFile << "\nStatistics:" << endl;
+    outFile << "Total Patients: " << numOfAR << endl;
+    outFile << "Total Finished Patients: " << numOfFP << endl;
+    outFile << "Average Wait Time: " << calculateAverageWaitTime() << endl;
+    outFile << "Auto-Promoted Patients: " << numOfReDisEP << endl;
+
+    // Print hospital statistics
+    for (int i = 0; i < numOfHospitals; i++) {
+        outFile << "\nHospital " << (i+1) << " Statistics:" << endl;
+        outFile << "Number of available Normal Cars: " << HospitalsList[i]->getNumber_FreeNC() << endl;
+        outFile << "Number of available Special Cars: " << HospitalsList[i]->getNumber_FreeSC() << endl;
+    }
+
+    outFile.close();
+}
+
+double Organizer::calculateAverageWaitTime() {
+    if (numOfFP == 0) return 0;
+    
+    double totalWaitTime = 0;
+    LinkedQueue<Patient*> tempQueue = FP;  // Create a temporary copy
+    Patient* p;
+    
+    while (!tempQueue.isEmpty()) {
+        tempQueue.dequeue(p);
+        totalWaitTime += p->getWaitingTime();
+    }
+    
+    return totalWaitTime / numOfFP;
 }

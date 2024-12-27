@@ -16,10 +16,17 @@ private:
 
 public:
     Car();
-
+    static const int DEFAULT_NORMAL_SPEED = 5;  // Default normal car speed
+    static const int DEFAULT_SPECIAL_SPEED = 11; // Default special car speed
     Car(int carType, int speed, int HID);
 
     Car(const Car& other);
+    int getSpeed() const { 
+        if (speed <= 0) {
+            return (carType == 1) ? DEFAULT_NORMAL_SPEED : DEFAULT_SPECIAL_SPEED;
+        }
+        return speed;
+    }
 
     int getCarType() const;
 

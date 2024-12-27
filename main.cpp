@@ -11,7 +11,7 @@ int main()
 {
 	UI_ ui;
 	ui.simulate();
-	
+	return 0;
 }
 
 
