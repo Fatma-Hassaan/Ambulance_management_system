@@ -4,14 +4,9 @@
 #include "UI.h"
 #include "Hospital.h"
 
-
-
-
 int main()
 {
 	UI_ ui;
 	ui.simulate();
 	return 0;
 }
-
-

@@ -30,6 +30,9 @@ private:
 	LinkedQueue<Patient*> CR;	//Cancelled Requests
 	priQueue<Car*> OC;			//Out Cars
 	priQueue<Car*> BC;			//Back Cars
+	double defaultFailureProb;  
+    void checkForCarFailures();
+    void handleCarFailure(Car* car);
     void GenerateOutputFile();	
 	double calculateAverageWaitTime();
 public:

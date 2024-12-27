@@ -24,6 +24,8 @@ private:
 	priQueue<Patient*> EP;
 	LinkedQueue<Car*> NC;
 	LinkedQueue<Car*> SC;
+	LinkedQueue<Car*> checkupQueue;  // Queue for cars in checkup
+    const int CHECKUP_DURATION = 3;
 public:
 	Hospital(int Hospital_ID, int t_NC, int t_SC, int NC_S, int SC_S);
 	void incrementTimeStep();		//delete
@@ -36,8 +38,11 @@ public:
 	void RecievePatient(Patient* P);
 	void RecieveBackCar(Car* bCar);
 	Car* AssigningPatient();
-
-
+    void addToCheckup(Car* car, int currentTime);
+    void processCheckups(int currentTime);
+    priQueue<Patient*>& getEPQueue() { return EP; }
+    LinkedQueue<Patient*>& getSPQueue() { return SP; }
+    LinkedQueue<Patient*>& getNPQueue() { return NP; }
 	Patient* simulatePatient(int);
 	Car* simulateCar(int);
 

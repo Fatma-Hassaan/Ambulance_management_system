@@ -13,6 +13,9 @@ private:
     int pickupTime;
     int finishTime;
     int HID;
+    bool isInCheckup;
+    int checkupEndTime;
+    double failureProbability;
 
 public:
     Car();
@@ -55,6 +58,11 @@ public:
     void setFinishTime(int finishTime);
 
     void calculateBusyTime();
-
+    bool getIsInCheckup() const { return isInCheckup; }
+    void setIsInCheckup(bool value) { isInCheckup = value; }
+    void setCheckupEndTime(int time) { checkupEndTime = time; }
+    int getCheckupEndTime() const { return checkupEndTime; }
+    double getFailureProbability() const { return failureProbability; }
+    void setFailureProbability(double prob) { failureProbability = prob; }
     void removePatient();
 };

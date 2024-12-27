@@ -6,10 +6,8 @@
 using namespace std;
 
 void UI_::simulate() {
-	string fn;
-	cout << "Enter the file name: ";
-	cin >> fn;
-	fstream inputfile;
-	Organizer O(inputfile, fn);
-	O.incrementTimeStep_and_Execute();
+    string fn = "SampleInputFile.txt";  
+    fstream inputfile;
+    Organizer O(inputfile, fn);
+    O.incrementTimeStep_and_Execute();
 }

@@ -121,8 +121,6 @@ Car* Hospital::AssigningPatient() {
 }
 
 
-
-
 Patient* Hospital::simulatePatient(int x) {
 	Patient* P=nullptr;
 	int pri;
@@ -161,4 +159,31 @@ Car* Hospital::simulateCar(int x) {
 		}
 	}
 	return C;
+}
+
+
+void Hospital::addToCheckup(Car* car, int currentTime) {
+	car->setIsInCheckup(true);
+	car->setCheckupEndTime(currentTime + CHECKUP_DURATION);
+	checkupQueue.enqueue(car);
+}
+
+void Hospital::processCheckups(int currentTime) {
+	if (checkupQueue.isEmpty()) return;
+	
+	Car* car;
+	checkupQueue.peek(car);
+	while (!checkupQueue.isEmpty() && car->getCheckupEndTime() <= currentTime) {
+		checkupQueue.dequeue(car);
+		car->setIsInCheckup(false);
+		
+		// Return car to appropriate queue
+		if (car->getCarType() == 1) {
+			NC.enqueue(car);
+			free_NC++;
+		} else {
+			SC.enqueue(car);
+			free_SC++;
+		}
+	}
 }

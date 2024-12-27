@@ -98,34 +98,69 @@ Organizer::Organizer(fstream & file, string fileName)
 
 
 void Organizer::incrementTimeStep_and_Execute() {
-    bool simulationComplete = false;
-    
-    while (!simulationComplete) {
+    while (!IsSimulationComplete()) {
         timeStep++;
         
-        AddingPatients();        
-        ProcessCancellations();  
-        HandleOutCars();         
-        HandleBackCars();        
         
-        // 2. Update hospitals
+        AddingPatients();
+        ProcessCancellations();
+        
+        
+        if (!OC.isEmpty()) {
+            Car* C;
+            int pri;
+            OC.peek(C, pri);
+            double randNum = (double)rand() / RAND_MAX;
+            
+            if (randNum < C->getFailureProbability()) {
+        
+                OC.dequeue(C, pri);
+                numOfOC--;
+                
+        
+                Patient* failedPatient = C->getPatient();
+                if (failedPatient) {
+                    int hospitalId = failedPatient->getHID() - 1;
+                    Hospital* hospital = HospitalsList[hospitalId];
+                    
+                    switch(failedPatient->getPType()) {
+                        case 1: 
+                            hospital->getNPQueue().enqueue(failedPatient);
+                            break;
+                        case 2:
+                            hospital->getSPQueue().enqueue(failedPatient);
+                            break;
+                        case 3:
+                            hospital->getEPQueue().enqueue(failedPatient, failedPatient->getSeverity());
+                            break;
+                    }
+                    C->removePatient();
+                }
+                
+                int hospitalId = C->getHID() - 1;
+                HospitalsList[hospitalId]->addToCheckup(C, timeStep);
+            }
+        }
+        
+        HandleOutCars();
+        HandleBackCars();
+        
         for (int i = 0; i < numOfHospitals; i++) {
-            // Try to assign available cars to waiting patients
+            HospitalsList[i]->processCheckups(timeStep);
+        }
+        
+        for (int i = 0; i < numOfHospitals; i++) {
             Car* assignedCar = HospitalsList[i]->AssigningPatient();
             if (assignedCar) {
-                int pickupTime = timeStep + (assignedCar->getPatient()->getDistance() / assignedCar->getSpeed());
+                int pickupTime = timeStep + 
+                    (assignedCar->getPatient()->getDistance() / assignedCar->getSpeed());
                 assignedCar->setPickupTime(pickupTime);
-                OC.enqueue(assignedCar, -pickupTime); // negative for priority queue ordering
+                OC.enqueue(assignedCar, -pickupTime);
                 numOfOC++;
             }
         }
-
-        PrintTimeStepStatus();
         
-        if (IsSimulationComplete()) {
-            simulationComplete = true;
-            GenerateOutputFile();
-        }
+        PrintTimeStepStatus();
     }
 }
 
@@ -220,19 +255,19 @@ void Organizer::BackCars()
     Car* C;
     int pri;
     BC.peek(C, pri);
-    while (C->getFinishTime() == timeStep)			// when timestep reaches the Finishtime
+    while (C->getFinishTime() == timeStep)		
     {
-        BC.dequeue(C, pri);		//Dequeue Car from BackCars List
+        BC.dequeue(C, pri);		
 
         Patient* ptr = C->getPatient();
-        FP.enqueue(ptr);					//Enqueue Patient inside FinishedPatients
-        C->removePatient();					//List and remove it from the Car
+        FP.enqueue(ptr);		
+        C->removePatient();		
 
-        C->setStatus(1);					//Set Car status back to ready and 
-        numOfBC--;						// decrement number of BackCars by 1
+        C->setStatus(1);		
+        numOfBC--;				
 
         int Hid = C->getHID();
-        HospitalsList[Hid - 1]->RecieveBackCar(C);		//Send the Car back to its Hospital
+        HospitalsList[Hid - 1]->RecieveBackCar(C);
 
         BC.peek(C, pri); 
     }
@@ -296,22 +331,15 @@ void Organizer::ProcessCancellations() {
         CR.peek(P);
         while (P->getCancelationTime() == timeStep) {
             CR.dequeue(P);
-
-            // Try to cancel from waiting queues in hospitals
             int hospitalId = P->getHID() - 1;
             Hospital* hospital = HospitalsList[hospitalId];
-            
-            // Try to cancel from out cars, using inherited methods
-            if (!CancelQueue::cancelBeforePickup(P, OC, BC)) {
-                // Check if patient is in a car that's already moving
-                CancelQueue::checkAndCancelOnCar(P, OC, BC);
-            }
 
-            if (!CR.isEmpty()) {
+            if (!CancelQueue::cancelBeforePickup(P, OC, BC)) 
+                CancelQueue::CancelOnCar(P, OC, BC); 
+            if (!CR.isEmpty()) 
                 CR.peek(P);
-            } else {
+             else 
                 break;
-            }
         }
     }
 }
@@ -402,4 +430,52 @@ double Organizer::calculateAverageWaitTime() {
     }
     
     return totalWaitTime / numOfFP;
+}
+
+void Organizer::checkForCarFailures() {
+    if (OC.isEmpty()) return;
+    
+    Car* C;
+    int pri;
+    OC.peek(C, pri);
+    
+    // Generate random number between 0 and 1
+    double randNum = (double)rand() / RAND_MAX;
+    
+    if (randNum < C->getFailureProbability()) {
+        handleCarFailure(C);
+    }
+}
+
+void Organizer::handleCarFailure(Car* car) {
+    // Remove from out cars
+    Car* C;
+    int pri;
+    OC.dequeue(C, pri);
+    numOfOC--;
+    
+    
+    Patient* failedPatient = C->getPatient();
+    if (failedPatient) {
+        int hospitalId = failedPatient->getHID() - 1;
+        Hospital* hospital = HospitalsList[hospitalId];
+        
+        switch(failedPatient->getPType()) {
+            case 1: // NP
+                hospital->getNPQueue().enqueue(failedPatient);
+                break;
+            case 2: // SP  
+                hospital->getSPQueue().enqueue(failedPatient);
+                break;
+            case 3: // EP
+                hospital->getEPQueue().enqueue(failedPatient, failedPatient->getSeverity());
+                break;
+        }
+        
+        C->removePatient();
+    }
+    
+    // Send car to checkup
+    int hospitalId = C->getHID() - 1;
+    HospitalsList[hospitalId]->addToCheckup(C, timeStep);
 }
