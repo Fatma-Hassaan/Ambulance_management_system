@@ -1,10 +1,12 @@
 #pragma once
+#include "TimeStep.h"
+
 
 class Patient {
 private:
     int PID;
     int requestTime;
-    int pickupTimes;
+    int pickupTime;
     int HID;
     int distance;
     int severity;
@@ -19,7 +21,7 @@ public:
 
     Patient(int PID, int HID, int cancelationTime);
 
-    Patient(const Patient &other);
+    Patient(const Patient& other);
 
     int getPID() const;
 
@@ -36,6 +38,8 @@ public:
     int getRequestTime() const;
 
     int getCancelationTime() const;
+
+    int getPickupTime() const;
 
     void setDistance(int distance);
 
