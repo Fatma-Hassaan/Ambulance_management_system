@@ -1,55 +1,107 @@
 #include "CancelQueue.h"
-/*
-bool CancelQueue::cancelBeforeCarMoves(Patient* P, priQueue<Car*>& OC, priQueue<Car*>& BC) {
+#include "Car.h"
+#include "Hospital.h"
+#include "Patient.h"
+#include "TimeStep.h"
 
-    if (this->remove(P)) {
+bool CancelQueue::cancelBeforeCarMoves(Patient* p, priQueue<Car*>& OC, priQueue<Car*>& BC) {
+	Node<Patient*>* temp = frontPtr;
+	Node<Patient*>* prev = nullptr;
 
-        return true;
-    }
-    return false;
+	while (!temp = nullptr) {
+
+		/// not assigned 
+		bool carAssigned = false; 
+		if (temp->getItem == p) {
+			// find if it is in OC 
+			for (int i = 0; i < OC.getSize;i++) {
+				Car* C = OC.peek(i);
+				if (C->getPatient == p) {
+					carAssigned = true; 
+					break;
+				}
+			}
+			for (int i = 0; i < BC.getSize; i++) {
+				Car* C = BC.peek(i); 
+				if (C->getPatient == p) {
+					carAssigned = true; 
+					break;
+				}
+
+
+			}
+			if (!carAssigned) {
+				if (prev == nullptr) {
+					temp = temp->getNext; 
+				}
+				else {
+				prev->setNext(temp->getNext)
+				}
+				delete temp; 
+				return true;
+			}
+
+		}
+		prev = temp; 
+		temp = temp->getNext; 
+	}
+	return false;
 }
-*/
 
-bool CancelQueue::cancelBeforePickup(Patient* P, priQueue<Car*>& OC, priQueue<Car*>& BC) {
-    Car* assignedCar = nullptr;
-    priQueue<Car*> tempQueue;
+bool CancelQueue::cancelBeforePickup(Patient * P, priQueue<Car*>&OC, priQueue<Car*>&BC) {
+	/*Car* C = nullptr;
+	if (OC->setPatient(P) && !BC->setPatient(P)) {
+		OC.dequeue(C);
+		BC.enqueue(C, -(C->getFinishTime()));
+		dequeue(P);
+		return true;
+	}
+	return false;*/
+	bool Assignedtobc = false;
+	while (!Assignedtobc) {
+     // loop to find it in oc 
+		for (int i = 0; i < OC.getSize; i++) {
+			Car* c = OC.peek(i);
 
+			if (c->getPatient() == P) {
+				// check if it not assigned to BC till now 
+				for (int j = 0; j < BC.getSize; j++) {
+					Car* bc = BC.peek(j);
+					if (bc->getPatient()==P){
+					  bool Assignedtobc = true; 
+					  break;
+					}
+				}
+				if (!Assignedtobc) {
+					OC.dequeue(c);
+					BC.enqueue(c);
+					dequeue(P); 
+					return true;
+				}
+			}
+		}
+	}
 
-    while (!OC.isEmpty()) {
-        int temp;
-        OC.dequeue(assignedCar,temp);
-        if (assignedCar->getPatient() == P) {
-            assignedCar->removePatient();
-            BC.enqueue(assignedCar, assignedCar->getFinishTime());
-            return true;
-        }
-        else {
-            tempQueue.enqueue(assignedCar, assignedCar->getPickupTime());
-        }
-    }
-
-    while (!tempQueue.isEmpty()) {
-        Car* tempCar;
-        int temp;
-        tempQueue.dequeue(tempCar,temp);
-        OC.enqueue(tempCar, tempCar->getPickupTime());
-    }
-
-    return false;
+	return false; 
 }
 
-bool CancelQueue::checkAndCancelOnCar(Patient* P, priQueue<Car*>& OC, priQueue<Car*>& BC) {
-    Car* assignedCar = nullptr;
+bool CancelQueue:: CancelOnCar(Patient* P, priQueue<Car*>& OC, priQueue<Car*>& BC) {
+	/*Car* C = nullptr;
+	if (OC->setPatient(P) || BC->setPatient(P)) {
+		OC.dequeue(C);
+		BC.enqueue(C, -(C->getFinishTime()));
+		dequeue(P);
+		return true;
+	}*/
 
-    while (!OC.isEmpty()) {
-        int temp;
-        OC.dequeue(assignedCar, temp);
-        if (assignedCar->getPatient() == P) {
-            OC.enqueue(assignedCar, assignedCar->getPickupTime());
-            return true;
-        }
-        OC.enqueue(assignedCar, assignedCar->getPickupTime());
-    }
-
-    return false;
+	for (int i = 0; i < BC.getSize; i++) {
+		Car* bc = BC.peek(i);
+		if (bc->getPatient() == P) {
+			BC.dequeue(bc);
+			BC.enqueue(bc, -bc->getFinishTime);
+			dequeue(P);
+			return true;
+		}
+	}
+	return false;
 }
