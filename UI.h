@@ -9,5 +9,5 @@ using namespace std;
 
 class UI_ {
 public:
-	void simulate();
+    void simulate(bool silent = false);
 };

@@ -33,10 +33,13 @@ private:
 	double defaultFailureProb;  
     void checkForCarFailures();
     void handleCarFailure(Car* car);
+	bool silentMode;
     void GenerateOutputFile();	
-	double calculateAverageWaitTime();
+	double calculateAverageWaitTime();	
 public:
 	Organizer(fstream& file, string fileName);
+	Organizer(fstream& file, string fileName, bool silent = false)
+	: silentMode(silent) { /* existing constructor code */ }
     void incrementTimeStep_and_Execute();
 	bool IsSimulationComplete();
 	void PrintTimeStepStatus();

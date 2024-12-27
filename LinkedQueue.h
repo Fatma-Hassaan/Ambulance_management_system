@@ -1,4 +1,3 @@
-
 /*
 This is a program that implements the queue abstract data type using a linked list.
 The queue is implemented as a chain of linked nodes that has two pointers, 
@@ -106,8 +105,7 @@ Node<T>* Node<T>::getNext() const
 template <typename T>
 class LinkedQueue
 {
-private :
-	
+protected :
 	Node<T>* backPtr;
 	Node<T>* frontPtr;
 public :
@@ -120,6 +118,9 @@ public :
 
 	//copy constructor
 	LinkedQueue(const LinkedQueue<T> & LQ);
+
+	Node<T>* getFrontNode() const { return frontPtr; }
+
 };
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -257,4 +258,3 @@ LinkedQueue<T>::LinkedQueue(const LinkedQueue<T> & LQ)
 }
 
 #endif
-

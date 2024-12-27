@@ -162,23 +162,34 @@ void Organizer::incrementTimeStep_and_Execute() {
         
         PrintTimeStepStatus();
     }
+    GenerateOutputFile();
 }
 
 bool Organizer::IsSimulationComplete() {
     if (timeStep < 5) return false;
     
+    // Check if there are any remaining patients or active cars
+    bool noMorePatients = AR.isEmpty() && CR.isEmpty();
+    bool noActiveCars = numOfOC == 0;
+    bool allCarsProcessed = numOfBC == 0;
+    
+    // Check all hospitals are empty
+    bool hospitalsEmpty = true;
     for (int i = 0; i < numOfHospitals; i++) {
         if (HospitalsList[i]->getNumber_CurrentEP() > 0 ||
             HospitalsList[i]->getNumber_CurrentNP() > 0 ||
             HospitalsList[i]->getNumber_CurrentSP() > 0) {
-            return false;
+            hospitalsEmpty = false;
+            break;
         }
     }
     
-    return (numOfOC == 0 && numOfBC == 0);
+    return noMorePatients && noActiveCars && allCarsProcessed && hospitalsEmpty;
 }
 
 void Organizer::PrintTimeStepStatus() {
+    if (silentMode) return;
+    
     cout << "\nTimestep: " << timeStep << endl;
     cout << "Out Cars: " << numOfOC << " Back Cars: " << numOfBC << endl;
     cout << "Finished Patients: " << numOfFP << endl;
@@ -190,7 +201,6 @@ void Organizer::PrintTimeStepStatus() {
         cout << " SP: " << HospitalsList[i]->getNumber_CurrentSP() << endl;
     }
 }
-
 
 void Organizer::AddingPatients() {
     Patient* P;
@@ -370,11 +380,18 @@ void Organizer::HandleBackCars() {
     int pri;
     if (!BC.isEmpty()) {
         BC.peek(C, pri);
-        while (C->getFinishTime() == timeStep) {
+        
+        cout << "Processing back car with finish time: " << C->getFinishTime() 
+             << " at timestep: " << timeStep << endl;
+        
+        while (!BC.isEmpty() && C->getFinishTime() == timeStep) {
             BC.dequeue(C, pri);
             
             Patient* ptr = C->getPatient();
-            FP.enqueue(ptr);
+            if (ptr) {
+                FP.enqueue(ptr);
+                numOfFP++; 
+            }
             C->removePatient();
             
             C->setStatus(1);
@@ -393,27 +410,35 @@ void Organizer::HandleBackCars() {
 }
 
 void Organizer::GenerateOutputFile() {
-    ofstream outFile("simulation_output.txt");
-    
-    if (!outFile.is_open()) {
+    ofstream outFile("output.txt");
+    if (!outFile) {
         cout << "Error: Could not create output file" << endl;
         return;
     }
 
-    outFile << "Simulation Ended at TimeStep " << timeStep << endl;
-    outFile << "\nStatistics:" << endl;
-    outFile << "Total Patients: " << numOfAR << endl;
-    outFile << "Total Finished Patients: " << numOfFP << endl;
-    outFile << "Average Wait Time: " << calculateAverageWaitTime() << endl;
-    outFile << "Auto-Promoted Patients: " << numOfReDisEP << endl;
+    outFile << "TT\t" << timeStep << "\n";
+    outFile << "FT\t" << numOfFP << "\n";
+    outFile << "WC\t" << calculateAverageWaitTime() << "\n";
+    outFile << "PA\t" << numOfReDisEP << "\n\n";
 
-    // Print hospital statistics
-    for (int i = 0; i < numOfHospitals; i++) {
-        outFile << "\nHospital " << (i+1) << " Statistics:" << endl;
-        outFile << "Number of available Normal Cars: " << HospitalsList[i]->getNumber_FreeNC() << endl;
-        outFile << "Number of available Special Cars: " << HospitalsList[i]->getNumber_FreeSC() << endl;
+    outFile << "patients Info: ";
+    LinkedQueue<Patient*> tempFP = FP; // Create copy to preserve original
+    Patient* p;
+    while (tempFP.dequeue(p)) {
+        outFile << "\nPatient " << p->getPID();
+        outFile << "\tAT: " << p->getRequestTime();
+        outFile << "\tWT: " << p->getWaitingTime();
+        outFile << "\tPT: " << p->getPickupTime();
     }
+    outFile << "\n\n";
 
+    outFile << "Hospitals Info:\n";
+    for (int i = 0; i < numOfHospitals; i++) {
+        Hospital* h = HospitalsList[i];
+        outFile << "hospital " << h->getHospital_ID() << ":\n";
+        outFile << "\tAvailable Normal Cars: " << h->getNumber_FreeNC() << "\n";
+        outFile << "\tAvailable Special Cars: " << h->getNumber_FreeSC() << "\n\n";
+    }
     outFile.close();
 }
 

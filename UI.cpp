@@ -5,9 +5,9 @@
 #include <fstream>
 using namespace std;
 
-void UI_::simulate() {
+void UI_::simulate(bool silent) {
     string fn = "SampleInputFile.txt";  
     fstream inputfile;
-    Organizer O(inputfile, fn);
+    Organizer O(inputfile, fn, silent); 
     O.incrementTimeStep_and_Execute();
 }

@@ -5,15 +5,15 @@
 #include "TimeStep.h"
 
 bool CancelQueue::cancelBeforeCarMoves(Patient* p, priQueue<Car*>& OC, priQueue<Car*>& BC) {
-    Node<Patient*>* temp = frontPtr;
+    Node<Patient*>* temp = getFrontNode();
     Node<Patient*>* prev = nullptr;
 
     while (temp != nullptr) {
         bool carAssigned = false;
         if (temp->getItem() == p) {
-            // Check OC queue
             Car* C;
             int pri;
+            // Check OC queue
             priQueue<Car*> tempOC = OC;
             while (!tempOC.isEmpty()) {
                 tempOC.dequeue(C, pri);
@@ -22,7 +22,6 @@ bool CancelQueue::cancelBeforeCarMoves(Patient* p, priQueue<Car*>& OC, priQueue<
                     break;
                 }
             }
-            
             // Check BC queue
             priQueue<Car*> tempBC = BC;
             while (!tempBC.isEmpty()) {
@@ -32,7 +31,6 @@ bool CancelQueue::cancelBeforeCarMoves(Patient* p, priQueue<Car*>& OC, priQueue<
                     break;
                 }
             }
-
             if (!carAssigned) {
                 if (prev == nullptr) {
                     frontPtr = temp->getNext();

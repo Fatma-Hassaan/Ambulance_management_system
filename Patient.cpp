@@ -1,4 +1,9 @@
 #include "Patient.h"
+#include "Organizer.h"
+#include "Car.h"
+#include "Hospital.h"
+#include "TimeStep.h"
+#include <cstdlib> // For rand and RAND_MAX
 
 Patient::Patient() : PID(0), requestTime(0), pickupTime(0), HID(0), distance(0), severity(0),
 pType(0), waitingTime(0), cancelationTime(0) {}
@@ -47,51 +52,3 @@ void Patient::calculateWaitingTime() {
     waitingTime = pickupTime-requestTime;
 }
 
-// In Organizer.cpp
-void Organizer::checkForCarFailures() {
-    Car* C;
-    int pri;
-    if (!OC.isEmpty()) {
-        OC.peek(C, pri);
-        // Generate random number between 0 and 1
-        double randNum = (double)rand() / RAND_MAX;
-        
-        if (randNum < C->getFailureProbability()) {
-            handleCarFailure(C);
-        }
-    }
-}
-
-void Organizer::handleCarFailure(Car* car) {
-    // Remove from out cars
-    Car* C;
-    int pri;
-    OC.dequeue(C, pri);
-    numOfOC--;
-    
-    // Put patient back at front of queue
-    Patient* failedPatient = C->getPatient();
-    if (failedPatient) {
-        int hospitalId = failedPatient->getHID() - 1;
-        Hospital* hospital = HospitalsList[hospitalId];
-        
-        // Put patient at front of appropriate queue based on type
-        switch(failedPatient->getPType()) {
-            case 1: // NP
-                hospital->getNPQueue().enqueueFront(failedPatient);
-                break;
-            case 2: // SP  
-                hospital->getSPQueue().enqueueFront(failedPatient);
-                break;
-            case 3: // EP
-                hospital->getEPQueue().enqueueFront(failedPatient, failedPatient->getSeverity());
-                break;
-        }
-        
-        C->removePatient();
-    }
-    
-    // Send car to checkup
-    int hospitalId = C->getHID() - 1;
-    HospitalsList[hospitalId]->addToCheckup(C, timeStep);
-}
