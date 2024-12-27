@@ -162,3 +162,29 @@ Car* Hospital::simulateCar(int x) {
 	}
 	return C;
 }
+
+
+int Hospital::getOCSize() const {
+	return OC.getSize();
+}
+
+int Hospital::getBCSize() const {
+	return BC.getSize();
+}
+
+void Hospital:: assignSp(Patient*P, Car*C){
+	while (!SP.isEmpty()) {
+		if (!SC.isEmpty) {
+			Patient* sp;
+			Car* sc;
+			SC.dequeue(sc);
+			SP.dequeue(sp);
+			sc->setPatient(sp);
+			sc->setStatus(1);
+		}
+		else {
+			break;
+		}
+	}
+
+}
