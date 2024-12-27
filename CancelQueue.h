@@ -11,5 +11,5 @@ public:
 
     bool cancelBeforeCarMoves(Patient* P, priQueue<Car*>& OC, priQueue<Car*>& BC);
     bool cancelBeforePickup(Patient* P, priQueue<Car*>& OC, priQueue<Car*>& BC);
-    bool checkAndCancelOnCar(Patient* P, priQueue<Car*>& OC, priQueue<Car*>& BC);
+    bool CancelOnCar(Patient* P, priQueue<Car*>& OC, priQueue<Car*>& BC);
 };
