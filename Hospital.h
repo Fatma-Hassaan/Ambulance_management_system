@@ -40,5 +40,8 @@ public:
 
 	Patient* simulatePatient(int);
 	Car* simulateCar(int);
+        int getOCSize() const;
+	int getBCSize() const;
+        void assignSp(Patient* P, Car* C);
 
 };
