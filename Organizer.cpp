@@ -403,3 +403,48 @@ double Organizer::calculateAverageWaitTime() {
     
     return totalWaitTime / numOfFP;
 }
+void Organizer::printalllist() {
+ // 1. AR
+    cout << "Active Requests" << endl; 
+    LinkedQueue<Patient>* tempAR = AR; 
+    Patient* P; 
+    while (!AR.isEmpty) {
+        tempAR.dequeue(P);
+        cout << "Patient" << P->getPID << "Hospital" << P->getHID <<"Request time"<<P->getRequestTime() << endl;
+    }
+
+
+    cout << "cancel requests:" << endl;
+    LinkedQueue<Patient>* tempCR = CR;
+    Patient* CP; 
+    while (!CR.isEmpty) {
+        tempCR.dequeue(CP);
+        cout << "Patient" << CP->getPID()<< "cancel time" << CP->getCancelationTime() << endl;
+    }
+
+
+    cout << "Out Cars:" << endl;
+    priQueue<Car>* tempOC = OC; 
+    Car* c; 
+    while (!OC.isEmpty) {
+        OC.dequeue(c);
+        cout << "Car:" << c->getID() << "Patient:"<<c->getPatient()->getPID() << endl;
+
+    }
+    cout << "Back cars:" << endl;
+    priQueue<Car*>tempBC = BC; 
+    Car* bc; 
+    while (!BC.isEmpty) {
+        BC.dequeue(bc);
+        cout << "Car:" << bc->getID() << "Patient:" << bc->getPatient()->getPID() <<"packup time:" <<bc->getPickupTime() << endl;
+
+    }
+    cout << "Finished Patients:" << endl;
+    LinkedQueue<Patient*> tempFP = FP; 
+    Patient* fp;
+    while (!FP.isEmpty) {
+        FP.dequeue(fp);
+        cout << "patient" << fp->getPID << "waiting time" << fp->calculateWaitingTime() << endl;
+    }
+
+}
